@@ -21,7 +21,7 @@ import setuptools  # noqa: F401 not used in code but needed in runtime, don't re
 
 from scrapy.utils.project import inside_project
 from w3lib.http import basic_auth_header
-from w3lib.utils.python import retry_on_eintr
+#from w3lib.utils.python import retry_on_eintr
 #from scrapy.utils.python import retry_on_eintr
 from scrapy.utils.conf import get_config, closest_scrapy_cfg
 
@@ -37,6 +37,16 @@ setup(
     entry_points = {'scrapy': ['settings = %(settings)s']},
 )
 """.lstrip()
+
+
+def retry_on_eintr(function, *args, **kw):
+    """Run a function and retry it while getting EINTR errors"""
+    while True:
+        try:
+            return function(*args, **kw)
+        except IOError as e:
+            if e.errno != errno.EINTR:
+                raise
 
 
 def parse_opts():
